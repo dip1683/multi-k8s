@@ -1,0 +1,28 @@
+language: generic 
+sudo: required 
+services:
+  - docker 
+
+before_install:
+  - docker build -t dip1683/react-test -f ./client/Dockerfile.dev ./client
+
+
+script:
+  - docker run -e CI=true dip1683/react-test npm test -- --coverage
+
+
+after_success:
+  - docker build -t dip1683/multi-client ./client
+  - docker build -t dip1683/multi-nginx ./nginx
+  - docker build -t dip1683/multi-server ./server
+  - docker build -t dip1683/multi-worker ./worker
+
+#Login to docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+#Take these images and push them to docker hub
+  - docker push dip1683/multi-client
+  - docker push dip1683/multi-nginx
+  - docker push dip1683/multi-server
+  - docker push dip1683/multi-worker
+
