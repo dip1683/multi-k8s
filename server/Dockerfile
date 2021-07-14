@@ -1,19 +1,6 @@
-FROM node:14.14.0-alpine
-
-WORKDIR '/app'
-
-COPY ./package.json  ./
-
-RUN npm config set unsafe-perm true
-
-RUN npm install --allow-root
-
-RUN mkdir node_modules/.cache && chmod -R 777 node_modules/.cache
-
-COPY . . 
-
-#RUN chown -R node:node /app/node_modules
-
-USER node
-
+FROM node:alpine
+WORKDIR "/app"
+COPY ./package.json ./
+RUN npm install
+COPY . .
 CMD ["npm", "run", "start"]
